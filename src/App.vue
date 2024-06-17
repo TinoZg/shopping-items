@@ -11,6 +11,7 @@ export interface ShoppingItem {
 const shoppingItem: Ref<ShoppingItem> = ref({} as ShoppingItem)
 const shoppingItems: Ref<Array<ShoppingItem>> = ref([] as Array<ShoppingItem>)
 const itemInput: Ref<HTMLInputElement | null> = ref(null)
+const showForm: Ref<boolean> = ref(true) // State variable for toggling form visibility
 
 function onSubmit(): void {
   shoppingItems.value.push(shoppingItem.value)
@@ -28,6 +29,11 @@ function modifyItem(index: number): void {
   const itemToModify = shoppingItems.value[index]
   shoppingItem.value = { ...itemToModify }
   shoppingItems.value.splice(index, 1)
+  showForm.value = true
+}
+
+function toggleForm(): void {
+  showForm.value = !showForm.value
 }
 
 // a computed ref - Total price
@@ -40,9 +46,11 @@ const totalPrice = computed(() => {
 </script>
 
 <template>
-  <form @submit.prevent="onSubmit">
+  <button @click="toggleForm" class="toggle-button">{{ showForm ? 'Hide' : 'Show' }} Form</button>
+
+  <form v-if="showForm" @submit.prevent="onSubmit">
     <label for="item">Item</label>
-    <input type="text" id="item" v-model="shoppingItem.item" required />
+    <input type="text" id="item" v-model="shoppingItem.item" ref="itemInput" required />
 
     <br />
     <label for="unit-price">Unit price</label>
@@ -123,6 +131,21 @@ form button {
 
 form button:hover {
   background-color: #004d40; /* Darker shade for hover effect */
+}
+
+/* Toggle button */
+.toggle-button {
+  display: block;
+  margin: 20px auto;
+  background-color: #00796b;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
 }
 
 /* Card Layout */
